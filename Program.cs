@@ -20,9 +20,13 @@ namespace Zahlensysteme_Methoden_T11_SS22
                 Console.WriteLine("2: Umwandlung von binär zu dezimal.");
                 Console.WriteLine("3: Umwandlung von dezimal zu hexadezimal.");
                 Console.WriteLine("4: Umwandlung von hexadezimal zu dezimal.");
+                Console.WriteLine("5: Umwandlung von hexadezimal zu binär.");
+                Console.WriteLine("6: Umwandlung von binär zu hexadezimal.");
+                Console.WriteLine("7: Umwandlung von Basis x zu Basis y. (2 <= Basis <= 16)");
                 Console.Write("Auswahl:");
                 auswahl = Console.ReadLine();
                 int dezimaleingabe;
+                string hexaleingabe, binäreingabe;
                 switch (auswahl)
                 {
                         case "1":
@@ -32,19 +36,44 @@ namespace Zahlensysteme_Methoden_T11_SS22
                         break;
                     case "2":
                         Console.Write("Binärzahl eingeben:");
-                        string binäreingabe = Console.ReadLine();
-                        Console.WriteLine("[" + binäreingabe + "]_2 = [" + BinärZuDezimal(binäreingabe) + "]_10");
+                        binäreingabe = Console.ReadLine();
+                        Console.WriteLine("[" + binäreingabe + "]_2 = [" +
+                                           BinärZuDezimal(binäreingabe) + "]_10");
                         break;
                     case "3":
                         Console.Write("Dezimalzahl eingeben:");
                         dezimaleingabe = Convert.ToInt32(Console.ReadLine());
-                        Console.WriteLine("[" + dezimaleingabe + "]_10 = [" + DezimalZuHexadezimal(dezimaleingabe) + "]_16");
+                        Console.WriteLine("[" + dezimaleingabe + "]_10 = [" +
+                                           DezimalZuHexadezimal(dezimaleingabe) + "]_16");
                         break;
                     case "4":
                         Console.Write("Hexadezimalzahl eingeben:");
-                        string hexaleingabe = Console.ReadLine();
-                        int ausgabe = HexadezimalZuDezimal(hexaleingabe);
-                        Console.WriteLine("[" + hexaleingabe + "]_16 = [" + ausgabe + "]_10");
+                        hexaleingabe = Console.ReadLine();
+                        Console.WriteLine("[" + hexaleingabe + "]_16 = [" +
+                                           HexadezimalZuDezimal(hexaleingabe) + "]_10");
+                        break;
+                    case "5":
+                        Console.Write("Hexadezimalzahl eingeben:");
+                        hexaleingabe = Console.ReadLine();
+                        Console.WriteLine("[" + hexaleingabe + "]_16 = [" +
+                                           DezimalZuBinär(HexadezimalZuDezimal(hexaleingabe)) + "]_2");
+                        break;
+                    case "6":
+                        Console.Write("Binärzahl eingeben:");
+                        binäreingabe = Console.ReadLine();
+                        Console.WriteLine("[" + binäreingabe + "]_2 = [" +
+                                           DezimalZuHexadezimal(BinärZuDezimal(binäreingabe)) + "]_16");
+                        break;
+                    case "7":
+                        Console.Write("Zahl eingeben:");
+                        string eingabezahl = Console.ReadLine();
+                        Console.Write("Basis der Eingabe:");
+                        int eingabebasis = Convert.ToInt32(Console.ReadLine());
+                        Console.Write("Basis der Ausgabe:");
+                        int ausgabebasis = Convert.ToInt32(Console.ReadLine());
+                        Console.WriteLine("[" + eingabezahl + "]_"+ eingabebasis + " = [" +
+                                           DezimalZuBasisY(BasisXZuDezimal(eingabezahl, eingabebasis),ausgabebasis)
+                                            + "]_"+ ausgabebasis + ")");
                         break;
                     default:
                         Console.WriteLine("ungültige Auswahl");
@@ -180,5 +209,31 @@ namespace Zahlensysteme_Methoden_T11_SS22
             return dezimalzahl;
         }
 
+        static int BasisXZuDezimal(string eingabezahl, int basis)
+        {
+            int dezimalzahl=0;
+            for (int i = 0; i < eingabezahl.Length; i++)
+            {
+                int l = eingabezahl.Length;
+                int stelle = BuchstabeZuZahl(eingabezahl[i].ToString());
+                int intHexal = Convert.ToInt32(stelle);
+                dezimalzahl += intHexal * (int)Math.Pow(basis, l - 1 - i);
+            }
+            return dezimalzahl;
+        }
+
+        static string DezimalZuBasisY(int eingabezahl, int basis)
+        {
+            string ausgabezahl = "";
+            int Rest;
+            int Quotient = eingabezahl;
+            while (Quotient != 0)
+            {
+                Rest = Quotient % basis;
+                Quotient /= basis;// Quotient = Quotient / basis;
+                ausgabezahl = ZahlZuBuchstabe(Rest) + ausgabezahl;//Konkatenation ist nicht kommutativ: rest + binärzahl != binärzahl + rest
+            }
+            return ausgabezahl;
+        }
     }
 }
